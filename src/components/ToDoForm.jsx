@@ -13,9 +13,6 @@ export const ToDoForm = ({addTodo}) => {
             placeholder = 'What is the task today?' onChange=
             {(e) => setValue(e.target.value)}/>
             <button type="submit" className="todo-btn">Add Task</button>
-
-            
-
         </form>
     )
 }
