@@ -1,0 +1,12 @@
+[
+  { "id": 1, "task": "Buy groceries", "completed": false, "isEditing": false },
+  { "id": 2, "task": "cook food", "completed": false, "isEditing": false },
+  { "id": 3, "task": "Eat lunch", "completed": false, "isEditing": false },
+  { "id": 4, "task": "Clean dishes", "completed": false, "isEditing": false },
+  { "id": 5, "task": "Take vit tabs", "completed": false, "isEditing": false },
+  { "id": 6, "task": "Read a book", "completed": false, "isEditing": false },
+  { "id": 7, "task": "Do yoga", "completed": false, "isEditing": false },
+  { "id": 8, "task": "Eat snacks", "completed": false, "isEditing": false },
+  { "id": 9, "task": "Do meditation", "completed": false, "isEditing": false },
+  { "id": 10, "task": "Eat dineer and sleep", "completed": false, "isEditing": false }
+]

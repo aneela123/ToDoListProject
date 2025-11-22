@@ -3,10 +3,12 @@ import { ToDoForm } from "./ToDoForm";
 import {v4 as uuidv4} from "uuid";
 import { ToDo } from "./ToDo";
 import { EditToDoForm } from "./EditToDoForm";
+import { ImPrevious } from "react-icons/im";
+import initialTodos from "../initialTodos.json";
 uuidv4();
 
 export const ToDoWrapper = () => {
-    const [todos, setTodos] = useState([])
+    const [todos, setTodos] = useState(initialTodos)
     const addTodo = todo => {
         setTodos([...todos, {id: uuidv4(), task: todo,
             completed: false, isEditing: false}])
