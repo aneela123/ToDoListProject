@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ToDoForm } from "./ToDoForm";
 import {v4 as uuidv4} from "uuid";
 import { ToDo } from "./ToDo";
@@ -8,7 +8,25 @@ import initialTodos from "../initialTodos.json";
 uuidv4();
 
 export const ToDoWrapper = () => {
-    const [todos, setTodos] = useState(initialTodos)
+    const [todos, setTodos] = useState([])
+
+    useEffect(() => {
+            fetch("http://localhost:8080/api/tasks")
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Backend data:", data);
+                    // Backend uses 'title' but UI uses 'task', so map fields
+                    const mapped = data.map(item => ({
+                        id: item.id,
+                        task: item.title,
+                        completed: item.completed,
+                        isEditing: false
+                    }));
+                    setTodos(mapped);
+                })
+                .catch(err => console.error("Error fetching tasks:", err));
+        }, []);
+
     const addTodo = todo => {
         setTodos([...todos, {id: uuidv4(), task: todo,
             completed: false, isEditing: false}])
