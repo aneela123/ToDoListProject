@@ -6,69 +6,105 @@ import { EditToDoForm } from "./EditToDoForm";
 import { ImPrevious } from "react-icons/im";
 import initialTodos from "../initialTodos.json";
 uuidv4();
+import {
+  getTodos,
+  addTodo as addTodoApi,
+  updateTodo as updateTodoApi,
+  deleteTodo as deleteTodoApi
+} from "../services/todoService";
 
 export const ToDoWrapper = () => {
     const [todos, setTodos] = useState([])
 
+    // Load from backend
     useEffect(() => {
-            fetch("http://localhost:8080/api/tasks")
-                .then(response => response.json())
-                .then(data => {
-                    console.log("Backend data:", data);
-                    // Backend uses 'title' but UI uses 'task', so map fields
-                    const mapped = data.map(item => ({
-                        id: item.id,
-                        task: item.title,
-                        completed: item.completed,
-                        isEditing: false
-                    }));
-                    setTodos(mapped);
-                })
-                .catch(err => console.error("Error fetching tasks:", err));
-        }, []);
+        loadTodos();
+    }, []);
 
-    const addTodo = todo => {
-        setTodos([...todos, {id: uuidv4(), task: todo,
-            completed: false, isEditing: false}])
-        console.log(todos)
-    }
+const loadTodos = async () => {
+        try {
+            const data = await getTodos();
+            const mapped = data.map(item => ({
+                id: item.id,
+                task: item.task,
+                completed: item.completed,
+                isEditing: false
+            }));
+            setTodos(mapped);
+        } catch (err) {
+            console.error("Error loading todos:", err);
+        }
+    };
 
-    const toggleComplete = id => {
-        setTodos(todos.map(todo => todo.id === id ? 
-            {...todo, completed: !todo.completed} : todo)
-        )
-    }
-    
-    const deleteToDo = id => {
-        setTodos(todos.filter(todo => todo.id !== id))
-    }
+    // ADD TODO (POST to backend)
+    const addTodo = async (todoText) => {
+        const newTodo = await addTodoApi(todoText);
+        setTodos([...todos, {
+            ...newTodo,
+            isEditing: false
+        }]);
+    };
 
-    const editToDo = id => {
-        setTodos(todos.map(todo => todo.id === id ? 
-            {...todo, isEditing: !todo.isEditing}: todo)
-        )
-    }
+    // TOGGLE COMPLETE (PUT to backend)
+    const toggleComplete = async (id) => {
+        const todo = todos.find(t => t.id === id);
+        const updated = await updateTodoApi(id, {
+            ...todo,
+            completed: !todo.completed
+        });
 
-    const editTask = (task, id) => {
-        setTodos(todos.map(todo => todo.id === id ? 
-            {...todo, task, isEditing: !todo.isEditing}: todo)
-        )
-    }
+        setTodos(todos.map(t => t.id === id ? { ...updated, isEditing: false } : t));
+    };
+
+    // DELETE TODO (DELETE from backend)
+    const deleteToDo = async (id) => {
+        await deleteTodoApi(id);
+        setTodos(todos.filter(todo => todo.id !== id));
+    };
+
+    // TOGGLE EDIT MODE
+    const editToDo = (id) => {
+        setTodos(todos.map(todo =>
+            todo.id === id ? { ...todo, isEditing: !todo.isEditing } : todo
+        ));
+    };
+
+    // UPDATE TODO TITLE (PUT to backend)
+    const editTask = async (newTask, id) => {
+        const todo = todos.find(t => t.id === id);
+        const updated = await updateTodoApi(id, {
+            ...todo,
+            task: newTask
+        });
+
+        setTodos(todos.map(t =>
+            t.id === id ? { ...updated, isEditing: false } : t
+        ));
+    };
+
 
     return(
         <div className="TodoWrapper">
             <h1>My ToDo List!</h1>
-            <ToDoForm addTodo={addTodo}/>
-            {todos.map((todo, index) => (
-                todo.isEditing ? (
-                    <EditToDoForm editTodo={editTask} task={todo}/>
-                ) : (
-                <ToDo task = {todo} key={index} 
-                  toggleComplete={toggleComplete} deleteToDo = {deleteToDo} editToDo={editToDo}/>
-                )
-            ))}
-            
-        </div>
+             <ToDoForm addTodo={addTodo}/>
 
-    );
-}
+                        {todos.map((todo) => (
+                            todo.isEditing ? (
+                                <EditToDoForm
+                                    key={todo.id}
+                                    editTodo={editTask}
+                                    task={todo}
+                                />
+                            ) : (
+                                <ToDo
+                                    key={todo.id}
+                                    task={todo}
+                                    toggleComplete={() => toggleComplete(todo.id)}
+                                    deleteToDo={() => deleteToDo(todo.id)}
+                                    editToDo={() => editToDo(todo.id)}
+                                />
+                            )
+                        ))}
+                    </div>
+                );
+            };
