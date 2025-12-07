@@ -8,7 +8,7 @@
 }
 
 body {
-  background: #8758ff;
+  background: #f5f7fa;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -89,4 +89,42 @@ h1 {
 .delete-icon {
   cursor: pointer;
 }
+
+.pagination {
+  margin-top: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 18px;
+}
+
+.pagination-btn {
+  padding: 10px 18px;
+  background-color: #7c3aed;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.pagination-btn:hover {
+  background-color: #6d28d9;
+  transform: translateY(-1px);
+}
+
+.pagination-btn:disabled {
+  background-color: #a3a3a3;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.pagination-info {
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+}
+
  

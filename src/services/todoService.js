@@ -1,7 +1,8 @@
 const API_URL = "http://localhost:8080/api/tasks";
 
-export const getTodos = async () => {
-  const response = await fetch(API_URL);
+// update GET with pagination
+export const getTodos = async (page = 0, size = 4) => {
+  const response = await fetch(`${API_URL}?page=${page}&size=${size}`);
   return response.json();
 
 };

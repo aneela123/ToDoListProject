@@ -15,35 +15,41 @@ import {
 
 export const ToDoWrapper = () => {
     const [todos, setTodos] = useState([])
+    const [page, setPage] = useState(0);
+    const [totalPages, setTotalPages] = useState(1);
 
     // Load from backend
     useEffect(() => {
         loadTodos();
-    }, []);
+    }, [page]);
 
 const loadTodos = async () => {
         try {
-            const data = await getTodos();
-            const mapped = data.map(item => ({
+            const data = await getTodos(page, 4);
+            const mapped = data.content.map(item => ({
                 id: item.id,
                 task: item.task,
                 completed: item.completed,
                 isEditing: false
             }));
             setTodos(mapped);
+            setTotalPages(data.totalPages);
         } catch (err) {
             console.error("Error loading todos:", err);
         }
     };
 
     // ADD TODO (POST to backend)
-    const addTodo = async (todoText) => {
-        const newTodo = await addTodoApi(todoText);
-        setTodos([...todos, {
-            ...newTodo,
-            isEditing: false
-        }]);
-    };
+const addTodo = async (todoText) => {
+  await addTodoApi(todoText);
+  if (page === 0) {
+      loadTodos();       // manually reload when you're already on page 0
+    } else {
+      setPage(0);        // this will reload automatically via useEffect
+    }
+};
+
+
 
     // TOGGLE COMPLETE (PUT to backend)
     const toggleComplete = async (id) => {
@@ -105,6 +111,28 @@ const loadTodos = async () => {
                                 />
                             )
                         ))}
+                     {/* Pagination Section */}
+                        <div className="pagination">
+                          <button
+                            className="pagination-btn"
+                            disabled={page === 0}
+                            onClick={() => setPage(page - 1)}
+                          >
+                            ← Previous
+                          </button>
+
+                          <span className="pagination-info">
+                            Page <strong>{page + 1}</strong> of <strong>{totalPages}</strong>
+                          </span>
+
+                          <button
+                            className="pagination-btn"
+                            disabled={page + 1 === totalPages}
+                            onClick={() => setPage(page + 1)}
+                          >
+                            Next →
+                          </button>
+                        </div>
                     </div>
                 );
             };
